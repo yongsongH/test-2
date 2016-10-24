@@ -1,0 +1,56 @@
+DATA    SEGMENT                            
+DATA1   DB 20 DUP(?)   
+DISPP1   DB 'please input letters, end with enter, exit with ctrl-c',0DH,0AH,'$' 
+DISPP2   DB 'the inverted litter is:', 0DH, 0AH,'$'   
+DISPP3   DB 0DH,0AH,'$' 
+DATA    ENDS 
+
+CODE    SEGMENT                                     
+        ASSUME CS:CODE,DS:DATA   
+START:   MOV AX,DATA          
+        MOV DS,AX          
+        MOV SI,00H          
+        MOV BX,OFFSET DATA1           
+        LEA DX,DISPP1                                  
+        MOV AH,9          
+        INT 21H 
+
+L1:      MOV AH,1          
+        INT 21H                                        
+        CMP AL,03H          
+        JZ L4          
+        CMP AL,0DH          
+        JZ L3          
+        CMP AL,61H          
+        JZ L2          
+        SUB AL,20H            
+        JMP L2 
+
+L2:      MOV [BX+SI],AL           
+        INC SI          
+        JMP L1 
+
+L3:      LEA DX,DISPP3                                  
+        MOV AH,9          
+        INT 21H          
+        LEA DX,DISPP2                                  
+        MOV AH,9          
+        INT 21H          
+        MOV [BX+SI],AL                       
+        MOV AL,0AH          
+        MOV [BX+SI+1],AL                     
+        MOV AL,'$'              
+        MOV [BX+SI+2],AL              
+        MOV DX,BX                 
+         MOV AH,9           
+         INT 21H    
+         LEA DX,DISPP3                                  
+         MOV AH,9          
+         INT 21H                                              
+         JMP L4     
+
+L4:      MOV AH,4CH          
+        INT 21H                               
+        CODE   ENDS         
+        END START 
+ 
